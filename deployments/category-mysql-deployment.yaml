@@ -17,34 +17,37 @@ spec:
         app: category
     spec:
       volumes:
-      - name: mysql-persistent-storage-category
-        emptyDir: {}
-      - name: log-volume
-        persistentVolumeClaim:
-          claimName: log-persistent-claim-ashish
-      containers:
-      - image: mysql:8.0
-        name: mysql
-        env:
-        - name: SPRING_DATASOURCE_PASSWORD
-          value: password
-        - name: SPRING_DATASOURCE_USER
-          value: root
-        - name: SPRING_DATASOURCE_URL
-          value: "jdbc:mysql://localhost:3306/category?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false&user=root"
-        ports:
-        - containerPort: 3306
-          name: mysql
-        volumeMounts:
         - name: mysql-persistent-storage-category
-          mountPath: /var/lib/mysql-category-ashish
-      - image: senappaa/category:distributed
-        imagePullPolicy: Always
-        name: category
-        ports:
-        - containerPort: 8082
-        volumeMounts:
+          emptyDir: {}
         - name: log-volume
-          mountPath: "/var/tmp/"
-        resources: {}
+          persistentVolumeClaim:
+            claimName: log-persistent-claim-ashish
+      containers:
+        - image: mysql:8.0
+          name: mysql
+          env:
+            - name:  MYSQL_ROOT_PASSWORD
+              value: password
+          ports:
+            - containerPort: 3306
+              name: mysql
+          volumeMounts:
+            - name: mysql-persistent-storage-category
+              mountPath: /var/lib/mysql-category-ashish
+        - image: senappaa/category:distributed
+          imagePullPolicy: Always
+          name: category
+          env:
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: password
+            - name: SPRING_DATASOURCE_USER
+              value: root
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://localhost:3306/category?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false&user=root"
+          ports:
+            - containerPort: 8082
+          volumeMounts:
+            - name: log-volume
+              mountPath: "/var/tmp/"
+          resources: {}
 status: {}

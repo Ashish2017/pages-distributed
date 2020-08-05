@@ -17,37 +17,39 @@ spec:
         app: business
     spec:
       volumes:
-      - name: mysql-persistent-storage-business
-        emptyDir: {}
-      - name: log-volume
-        persistentVolumeClaim:
-          claimName: log-persistent-claim-ashish
-      containers:
-      - image: mysql:8.0
-        name: mysql
-        env:
-        - name: SPRING_DATASOURCE_PASSWORD
-          value: password
-        - name: SPRING_DATASOURCE_USER
-          value: root
-        - name: SPRING_DATASOURCE_URL
-          value: "jdbc:mysql://localhost:3306/business?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false&user=root"
-        ports:
-        - containerPort: 3306
-          name: mysql
-        volumeMounts:
         - name: mysql-persistent-storage-business
-          mountPath: /var/lib/mysql-business-ashish
-      - image: senappaa/business:distributed
-        imagePullPolicy: Always
-        name: business
-        env:
-        - name: CATEGORY_URL
-          value: "http://category:8082/category"
-        volumeMounts:
+          emptyDir: {}
         - name: log-volume
-          mountPath: "/var/tmp/"
-        ports:
-        - containerPort: 8081
-        resources: {}
+          persistentVolumeClaim:
+            claimName: log-persistent-claim-ashish
+      containers:
+        - image: mysql:8.0
+          name: mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: password
+          ports:
+            - containerPort: 3306
+              name: mysql
+          volumeMounts:
+            - name: mysql-persistent-storage-business
+              mountPath: /var/lib/mysql-business-ashish
+        - image: senappaa/business:distributed
+          imagePullPolicy: Always
+          name: business
+          env:
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: password
+            - name: SPRING_DATASOURCE_USER
+              value: root
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://localhost:3306/business?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false&user=root"
+            - name: CATEGORY_URL
+              value: "http://a3dcfa3015a9a4570b03fc397a7e54ea-1058930476.us-east-1.elb.amazonaws.com:8082/category"
+          volumeMounts:
+            - name: log-volume
+              mountPath: "/var/tmp/"
+          ports:
+            - containerPort: 8081
+          resources: {}
 status: {}
