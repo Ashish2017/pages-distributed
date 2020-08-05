@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql
-  namespace: aditya
+  namespace: ashish
   labels:
     app: mysql
 spec:
@@ -32,8 +32,8 @@ spec:
           name: mysql
         volumeMounts:
         - name: mysql-persistent-storage
-          mountPath: /var/lib/mysql-<your-name>
+          mountPath: /var/lib/mysql-ashish
       volumes:
       - name: mysql-persistent-storage
         persistentVolumeClaim:
-          claimName: mysql-pv-claim-<your-name>
+          claimName: mysql-pv-claim-ashish
